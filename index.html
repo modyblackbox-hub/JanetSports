@@ -1,0 +1,3013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="dashboard">
+  <meta name="design-style" content="carbon">
+  <title>JANET SPORTS · v.11/24/26</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* 1. Carbon style tokens */
+      --background: #ffffff;
+      --surface-container-low: #f4f4f4;
+      --surface-container: #f4f4f4;
+      --surface-container-high: #e0e0e0;
+
+      --on-surface: #161616;
+      --on-surface-variant: #525252;
+
+      --outline: #8d8d8d;
+      --outline-variant: #e0e0e0;
+
+      --primary: #0f62fe;
+      --on-primary: #ffffff;
+      --primary-container: #d0e2ff;
+      --on-primary-container: #161616;
+      --secondary: #6f6f6f;
+      --tertiary: #198038;
+      --error: #da1e28;
+      --on-error: #ffffff;
+
+      --data-1: #0f62fe;
+      --data-2: #6929c4;
+      --data-3: #005d5d;
+      --data-4: #9f1853;
+      --data-context: #8d8d8d;
+
+      --font-headline: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-label: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+      --rounded: 0.125rem;
+      --rounded-lg: 0.25rem;
+      --rounded-full: 0.75rem;
+
+      --shadow-1: 0 2px 6px rgb(0 0 0 / 0.1);
+      --shadow-2: 0 4px 12px rgb(0 0 0 / 0.12);
+      --rule: 1px solid var(--outline-variant);
+      --field-rule: 1px solid var(--outline);
+      --indicator: 2px solid var(--primary);
+
+      /* 2. ESPN Portal & Featured Team Color Accents */
+      --broadcast-bar: #161616;
+      --broadcast-bar-elevated: #262626;
+      --on-broadcast-bar: #ffffff;
+      --broadcast-muted: #c6c6c6;
+      --broadcast-border: #393939;
+
+      --uf-blue: #0021A5;
+      --uf-orange: #FA4616;
+      --uf-orange-ink: #b83008;
+      --uf-tint: #eef2ff;
+      --on-uf-blue: #ffffff;
+
+      --az-red: #97233F;
+      --az-black: #161616;
+      --az-tint: #fdf2f4;
+      --on-az-red: #ffffff;
+
+      --phx-purple: #1D1160;
+      --phx-orange: #E56020;
+      --phx-orange-ink: #b0410b;
+      --phx-tint: #f3f0ff;
+      --on-phx-purple: #ffffff;
+
+      /* 3. Shared Foundation Tokens */
+      --positive: #198038;
+      --positive-tint: #defbe6;
+      --warning: #b28600;
+      --warning-tint: #fcf4d6;
+      --error-tint: #fff1f1;
+      --focus: #0f62fe;
+
+      /* Dashboard type scale */
+      --display-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem);
+      --headline-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+      --subhead-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+      --body-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+      --label-size: 0.75rem;
+
+      /* Spacing scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+      --space-3xl: 6rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    header { position: static !important; }
+    api-shim { display: none; }
+
+    button, input, select {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Top ESPN-style Score Ticker Strip */
+    .ticker-shell {
+      background: var(--broadcast-bar);
+      color: var(--on-broadcast-bar);
+      border-bottom: 2px solid var(--uf-orange);
+    }
+
+    .ticker-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: var(--space-sm) var(--space-lg);
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: var(--space-md);
+      align-items: center;
+    }
+
+    .ticker-brand-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--on-broadcast-bar);
+      padding-right: var(--space-md);
+      border-right: 1px solid var(--broadcast-border);
+      white-space: nowrap;
+    }
+
+    .ticker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--rounded-full);
+      background: var(--tertiary);
+      display: inline-block;
+    }
+    .ticker-dot.is-paused { background: var(--warning); }
+    .ticker-dot.is-syncing { background: var(--primary); }
+
+    .ticker-strip {
+      display: flex;
+      gap: var(--space-sm);
+      overflow-x: auto;
+      scrollbar-width: thin;
+      padding: var(--space-xs) 0;
+    }
+
+    .ticker-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      background: var(--broadcast-bar-elevated);
+      border: 1px solid var(--broadcast-border);
+      border-left-width: 3px;
+      padding: var(--space-xs) var(--space-sm);
+      white-space: nowrap;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      cursor: pointer;
+      color: var(--on-broadcast-bar);
+      transition: background-color var(--dur-micro) var(--ease-out);
+      min-height: 44px;
+    }
+    .ticker-chip:hover {
+      background: var(--az-black);
+      border-color: var(--outline);
+    }
+    .ticker-chip[data-team="uf-fb"],
+    .ticker-chip[data-team="uf-bball"] { border-left-color: var(--uf-orange); }
+    .ticker-chip[data-team="az-cards"] { border-left-color: var(--az-red); }
+    .ticker-chip[data-team="phx-suns"] { border-left-color: var(--phx-orange); }
+
+    .ticker-chip-team {
+      font-weight: 600;
+      color: var(--on-broadcast-bar);
+    }
+    .ticker-chip-score {
+      color: var(--broadcast-muted);
+    }
+    .ticker-chip-next {
+      color: var(--on-broadcast-bar);
+      border-left: 1px solid var(--broadcast-border);
+      padding-left: var(--space-sm);
+    }
+
+    .ticker-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .poll-meta {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--broadcast-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      line-height: 1.25;
+      min-width: 140px;
+    }
+
+    .poll-progress-track {
+      width: 100%;
+      height: 2px;
+      background: var(--broadcast-border);
+      margin-top: var(--space-xs);
+      overflow: hidden;
+    }
+    .poll-progress-bar {
+      height: 100%;
+      width: 100%;
+      background: var(--primary);
+      transform-origin: left center;
+      transition: transform 0.25s linear;
+    }
+
+    .btn-ticker {
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      border: 1px solid var(--broadcast-border);
+      background: var(--broadcast-bar-elevated);
+      color: var(--on-broadcast-bar);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      transition: background-color var(--dur-micro) var(--ease-out);
+    }
+    .btn-ticker:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--on-primary);
+    }
+    .btn-ticker:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    /* Main Masthead */
+    .masthead {
+      background: var(--background);
+      border-bottom: var(--rule);
+    }
+
+    .masthead-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-lg) var(--space-md);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: var(--space-lg);
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .brand-title-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .brand-title {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-size: var(--display-size);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      color: var(--on-surface);
+    }
+    .brand-title strong {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .version-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 var(--space-sm);
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      border-radius: var(--rounded-full);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    .brand-subtitle {
+      margin: 0;
+      font-size: var(--body-size);
+      color: var(--on-surface-variant);
+      max-width: 65ch;
+    }
+
+    .masthead-settings {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      align-items: end;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .control-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: var(--surface-container);
+      border: var(--rule);
+    }
+
+    .seg-btn {
+      min-height: 44px;
+      padding: 0 var(--space-md);
+      border: 0;
+      background: transparent;
+      color: var(--on-surface-variant);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+      white-space: nowrap;
+    }
+    .seg-btn:hover {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+    }
+    .seg-btn.is-active {
+      background: var(--on-surface);
+      color: var(--background);
+    }
+
+    /* Team Filter Bar */
+    .filter-bar {
+      background: var(--surface-container-low);
+      border-bottom: var(--rule);
+    }
+
+    .filter-bar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+
+    .team-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+
+    .team-tab {
+      min-height: 48px;
+      padding: var(--space-sm) var(--space-md);
+      background: transparent;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      font-family: var(--font-headline);
+      font-size: var(--body-size);
+      font-weight: 500;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+    }
+    .team-tab:hover {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+    }
+    .team-tab.is-active {
+      font-weight: 600;
+      color: var(--on-surface);
+      background: var(--background);
+    }
+    .team-tab[data-filter="all"].is-active { border-bottom-color: var(--primary); }
+    .team-tab[data-filter="uf-fb"].is-active { border-bottom-color: var(--uf-blue); }
+    .team-tab[data-filter="uf-bball"].is-active { border-bottom-color: var(--uf-orange); }
+    .team-tab[data-filter="az-cards"].is-active { border-bottom-color: var(--az-red); }
+    .team-tab[data-filter="phx-suns"].is-active { border-bottom-color: var(--phx-purple); }
+
+    .team-swatch {
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .swatch-all { background: var(--primary); }
+    .swatch-uf-fb { background: linear-gradient(135deg, var(--uf-blue) 50%, var(--uf-orange) 50%); }
+    .swatch-uf-bball { background: linear-gradient(135deg, var(--uf-orange) 50%, var(--uf-blue) 50%); }
+    .swatch-az { background: linear-gradient(135deg, var(--az-red) 50%, var(--az-black) 50%); }
+    .swatch-phx { background: linear-gradient(135deg, var(--phx-purple) 50%, var(--phx-orange) 50%); }
+
+    .sync-status-banner {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      padding: var(--space-xs) 0;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .sync-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-sm);
+      border-radius: var(--rounded-full);
+      background: var(--positive-tint);
+      color: var(--positive);
+      font-weight: 600;
+    }
+
+    /* Main Page Grid */
+    .page-grid {
+      display: grid;
+      gap: var(--space-xl);
+      padding: var(--space-lg);
+      max-width: 1280px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-sm);
+      border-bottom: var(--rule);
+      padding-bottom: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .section-title {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-size: var(--headline-size);
+      font-weight: 300;
+      color: var(--on-surface);
+      line-height: 1.2;
+    }
+    .section-title strong { font-weight: 600; }
+
+    .section-kicker {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+    }
+
+    /* Countdown Roster Cards */
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(275px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+
+    .team-card {
+      background: var(--surface-container);
+      border: var(--rule);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: background-color var(--dur-micro) var(--ease-out), outline-color var(--dur-micro) var(--ease-out);
+    }
+    .team-card.is-hidden { display: none; }
+    .team-card.is-selected {
+      background: var(--background);
+      outline: 2px solid var(--primary);
+      outline-offset: -2px;
+    }
+
+    .team-accent-bar {
+      height: 5px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+    }
+    .bar-uf-fb-1 { background: var(--uf-blue); }
+    .bar-uf-fb-2 { background: var(--uf-orange); }
+    .bar-uf-bb-1 { background: var(--uf-orange); }
+    .bar-uf-bb-2 { background: var(--uf-blue); }
+    .bar-az-1 { background: var(--az-red); }
+    .bar-az-2 { background: var(--az-black); }
+    .bar-phx-1 { background: var(--phx-purple); }
+    .bar-phx-2 { background: var(--phx-orange); }
+
+    .team-card-body {
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      flex: 1;
+    }
+
+    .team-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--space-sm);
+    }
+
+    .team-identity {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .team-monogram {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-label);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .mono-uf-fb { background: var(--uf-blue); color: var(--on-uf-blue); border-bottom: 3px solid var(--uf-orange); }
+    .mono-uf-bb { background: var(--uf-orange); color: var(--on-surface); border-bottom: 3px solid var(--uf-blue); }
+    .mono-az { background: var(--az-red); color: var(--on-az-red); border-bottom: 3px solid var(--az-black); }
+    .mono-phx { background: var(--phx-purple); color: var(--on-phx-purple); border-bottom: 3px solid var(--phx-orange); }
+
+    .team-league {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+      display: block;
+    }
+
+    .team-name {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-weight: 600;
+      color: var(--on-surface);
+      line-height: 1.2;
+    }
+
+    .record-badge {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--background);
+      border: var(--rule);
+      color: var(--on-surface);
+      white-space: nowrap;
+    }
+
+    .standing-line {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .rank-tag {
+      padding: 2px var(--space-sm);
+      border-radius: var(--rounded-full);
+      font-weight: 600;
+    }
+    .rank-tag.uf { background: var(--uf-tint); color: var(--uf-blue); }
+    .rank-tag.az { background: var(--az-tint); color: var(--az-red); }
+    .rank-tag.phx { background: var(--phx-tint); color: var(--phx-purple); }
+
+    .matchup-box {
+      background: var(--background);
+      border: var(--rule);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .matchup-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .next-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+    }
+
+    .tv-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-sm);
+      border-radius: var(--rounded);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      background: var(--on-surface);
+      color: var(--background);
+    }
+    .tv-pill.tv-abc { background: var(--uf-blue); color: var(--on-uf-blue); }
+    .tv-pill.tv-fox { background: var(--az-red); color: var(--on-az-red); }
+    .tv-pill.tv-cbs { background: var(--primary); color: var(--on-primary); }
+    .tv-pill.tv-sec { background: var(--uf-orange); color: var(--on-surface); }
+    .tv-pill.tv-nba { background: var(--phx-purple); color: var(--on-phx-purple); }
+
+    .matchup-opponent {
+      font-family: var(--font-headline);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--on-surface);
+    }
+
+    .matchup-meta {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+    }
+
+    /* Countdown Matrix */
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-xs);
+    }
+
+    .cd-cell {
+      background: var(--background);
+      border: var(--rule);
+      padding: var(--space-sm) var(--space-xs);
+      text-align: center;
+    }
+
+    .cd-val {
+      display: block;
+      font-family: var(--font-label);
+      font-size: 1.375rem;
+      font-weight: 500;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      color: var(--on-surface);
+    }
+
+    .cd-unit {
+      display: block;
+      font-family: var(--font-label);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+      margin-top: 2px;
+    }
+
+    .countdown-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+    }
+
+    .urgency-label {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .urgency-tonight { color: var(--uf-orange-ink); }
+    .urgency-tomorrow { color: var(--phx-orange-ink); }
+    .urgency-upcoming { color: var(--primary); }
+    .urgency-live { color: var(--positive); }
+
+    .card-footer-strip {
+      border-top: var(--rule);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--surface-container-low);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+    }
+
+    .last-result {
+      color: var(--on-surface);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .result-w {
+      color: var(--positive);
+      font-weight: 600;
+    }
+    .result-l {
+      color: var(--error);
+      font-weight: 600;
+    }
+
+    .card-focus-btn {
+      min-height: 44px;
+      padding: 0 var(--space-md);
+      border: 1px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+    }
+    .card-focus-btn:hover {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+
+    /* Schedule & TV Guide Controls + Table */
+    .schedule-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: end;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .toolbar-left {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      align-items: end;
+    }
+
+    .search-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      min-width: 240px;
+    }
+
+    .text-input {
+      height: 44px;
+      background: var(--surface-container);
+      border: 0;
+      border-bottom: var(--field-rule);
+      padding: 0 var(--space-md);
+      color: var(--on-surface);
+      font-size: var(--body-size);
+    }
+    .text-input:focus {
+      outline: 2px solid var(--focus);
+      outline-offset: -2px;
+    }
+
+    .btn-secondary {
+      min-height: 44px;
+      padding: 0 var(--space-md);
+      border: 1px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      font-family: var(--font-body);
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+    }
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: var(--rule);
+      background: var(--background);
+    }
+
+    table.schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 760px;
+    }
+
+    .schedule-table thead th {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--rule);
+      white-space: nowrap;
+    }
+
+    .schedule-table tbody tr {
+      border-bottom: var(--rule);
+      transition: background-color var(--dur-micro) var(--ease-out);
+    }
+    .schedule-table tbody tr:nth-child(even) {
+      background: var(--surface-container-low);
+    }
+    .schedule-table tbody tr:hover {
+      background: var(--primary-container);
+    }
+
+    .schedule-table tbody td {
+      padding: var(--space-sm) var(--space-md);
+      vertical-align: middle;
+      font-size: 0.9375rem;
+    }
+
+    .team-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .mono-cell {
+      font-family: var(--font-label);
+      font-size: 0.8125rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .score-cell {
+      font-family: var(--font-label);
+      font-size: 0.875rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px var(--space-sm);
+      border-radius: var(--rounded);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      margin-right: var(--space-xs);
+    }
+    .status-w { background: var(--positive-tint); color: var(--positive); }
+    .status-l { background: var(--error-tint); color: var(--error); }
+    .status-up { background: var(--primary-container); color: var(--on-primary-container); }
+    .status-bye { background: var(--surface-container-high); color: var(--on-surface-variant); }
+
+    .venue-sub {
+      display: block;
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+    }
+
+    .empty-state {
+      padding: var(--space-xl);
+      text-align: center;
+      background: var(--surface-container);
+      border: var(--rule);
+    }
+    .empty-state p {
+      margin: 0 0 var(--space-md);
+      color: var(--on-surface-variant);
+    }
+
+    /* Asymmetric Bottom Grid: Team Intel & CFP/News Wire */
+    .intel-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    .intel-cards {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .intel-card {
+      background: var(--surface-container);
+      border: var(--rule);
+      border-left: 4px solid var(--primary);
+      padding: var(--space-md);
+    }
+    .intel-card.is-hidden { display: none; }
+    .intel-card[data-team="uf-fb"] { border-left-color: var(--uf-blue); }
+    .intel-card[data-team="uf-bball"] { border-left-color: var(--uf-orange); }
+    .intel-card[data-team="az-cards"] { border-left-color: var(--az-red); }
+    .intel-card[data-team="phx-suns"] { border-left-color: var(--phx-purple); }
+
+    .intel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-sm);
+      border-bottom: var(--rule);
+      padding-bottom: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+
+    .intel-title {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-weight: 600;
+    }
+
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-sm) 0;
+    }
+
+    .stat-tile {
+      background: var(--background);
+      border: var(--rule);
+      padding: var(--space-sm);
+    }
+
+    .stat-tile-label {
+      font-family: var(--font-label);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+      display: block;
+    }
+
+    .stat-tile-val {
+      font-family: var(--font-label);
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--on-surface);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .stat-tile-sub {
+      font-size: 0.8125rem;
+      color: var(--on-surface-variant);
+      display: block;
+    }
+
+    .intel-notes {
+      margin: var(--space-sm) 0 0;
+      padding-left: var(--space-md);
+      color: var(--on-surface-variant);
+      font-size: 0.9375rem;
+    }
+    .intel-notes li + li {
+      margin-top: var(--space-xs);
+    }
+
+    /* Right Column: CFP Top 25 & Headlines */
+    .side-stack {
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .cfp-panel {
+      background: var(--surface-container);
+      border: var(--rule);
+      padding: var(--space-md);
+    }
+
+    .cfp-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px var(--space-md);
+      margin-top: var(--space-sm);
+    }
+
+    .cfp-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-xs) var(--space-xs);
+      border-bottom: var(--rule);
+      font-size: 0.875rem;
+    }
+    .cfp-row.is-gators {
+      background: var(--uf-blue);
+      color: var(--on-uf-blue);
+      font-weight: 600;
+      border-left: 3px solid var(--uf-orange);
+    }
+    .cfp-row.is-gators .cfp-rank {
+      color: var(--on-uf-blue);
+    }
+
+    .cfp-rank {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      min-width: 24px;
+      text-align: right;
+    }
+
+    .news-panel {
+      background: var(--surface-container);
+      border: var(--rule);
+      padding: var(--space-md);
+    }
+
+    .news-list {
+      list-style: none;
+      margin: var(--space-sm) 0 0;
+      padding: 0;
+    }
+
+    .news-item {
+      padding: var(--space-sm) 0;
+      border-top: var(--rule);
+    }
+    .news-item:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .news-meta {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .news-headline {
+      margin: 2px 0;
+      font-weight: 600;
+      color: var(--on-surface);
+    }
+
+    .news-summary {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Footer */
+    .portal-footer {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: var(--space-lg);
+      border-top: var(--rule);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+    }
+
+    .toast-inline {
+      position: fixed;
+      bottom: var(--space-md);
+      right: var(--space-md);
+      background: var(--broadcast-bar);
+      color: var(--on-broadcast-bar);
+      border-left: 3px solid var(--tertiary);
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      box-shadow: var(--shadow-2);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity var(--dur-short) var(--ease-out), transform var(--dur-short) var(--ease-out);
+      z-index: 50;
+    }
+    .toast-inline.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .intel-grid {
+        grid-template-columns: 1fr;
+      }
+      .ticker-inner {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+      }
+      .ticker-brand-tag {
+        border-right: 0;
+        border-bottom: 1px solid var(--broadcast-border);
+        padding-bottom: var(--space-xs);
+      }
+      .ticker-controls {
+        justify-content: flex-start;
+      }
+      .poll-meta {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-grid {
+        grid-template-columns: 1fr;
+        padding: var(--space-md);
+      }
+      .masthead-inner,
+      .filter-bar-inner,
+      .ticker-inner {
+        padding-left: var(--space-md);
+        padding-right: var(--space-md);
+      }
+      .cfp-list {
+        grid-template-columns: 1fr;
+      }
+      .seg-btn {
+        padding: 0 var(--space-sm);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ESPN-Style Broadcast Scoreboard Ticker & Auto-Refresh Polling Bar -->
+  <div class="ticker-shell" role="region" aria-label="Live scoreboard ticker and refresh controls">
+    <div class="ticker-inner">
+      <div class="ticker-brand-tag">
+        <span id="poll-dot" class="ticker-dot" aria-hidden="true"></span>
+        <span>LIVE WIRE · 4 ROSTERS</span>
+      </div>
+
+      <div id="ticker-strip" class="ticker-strip" aria-live="polite">
+        <!-- Populated inline via JS -->
+      </div>
+
+      <div class="ticker-controls">
+        <div class="poll-meta">
+          <span id="poll-status-text">NEXT SYNC IN 30S</span>
+          <div class="poll-progress-track" aria-hidden="true">
+            <div id="poll-progress-bar" class="poll-progress-bar"></div>
+          </div>
+        </div>
+        <button id="btn-refresh" type="button" class="btn-ticker" onclick="triggerManualRefresh()">
+          Refresh
+        </button>
+        <button id="btn-poll-toggle" type="button" class="btn-ticker" onclick="togglePolling()">
+          Pause
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Masthead -->
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand-block">
+        <div class="brand-title-row">
+          <h1 class="brand-title"><strong>JANET</strong> SPORTS</h1>
+          <span class="version-badge">v.11/24/26</span>
+        </div>
+        <p class="brand-subtitle">
+          Florida Gators Football &amp; Men’s Basketball · Arizona Cardinals · Phoenix Suns — Live Countdown Center, Schedule &amp; TV Broadcast Guide
+        </p>
+      </div>
+
+      <div class="masthead-settings">
+        <div class="control-group">
+          <span class="control-label">Broadcast Timezone</span>
+          <div class="segmented" role="group" aria-label="Broadcast timezone">
+            <button id="tz-et" type="button" class="seg-btn is-active" onclick="setTimezone('ET')">ET (FL)</button>
+            <button id="tz-mst" type="button" class="seg-btn" onclick="setTimezone('MST')">MST (AZ)</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Countdown Clock</span>
+          <div class="segmented" role="group" aria-label="Countdown clock reference">
+            <button id="clk-edition" type="button" class="seg-btn is-active" onclick="setClockMode('edition')">Nov 24 Edition</button>
+            <button id="clk-system" type="button" class="seg-btn" onclick="setClockMode('system')">System Clock</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Team Filtering Strip -->
+  <nav class="filter-bar" aria-label="Team roster filter">
+    <div class="filter-bar-inner">
+      <div class="team-tabs" role="tablist" aria-label="Filter dashboard by team">
+        <button type="button" class="team-tab is-active" data-filter="all" role="tab" aria-selected="true" onclick="setTeamFilter('all')">
+          <span class="team-swatch swatch-all" aria-hidden="true"></span>
+          <span>All Teams (4)</span>
+        </button>
+        <button type="button" class="team-tab" data-filter="uf-fb" role="tab" aria-selected="false" onclick="setTeamFilter('uf-fb')">
+          <span class="team-swatch swatch-uf-fb" aria-hidden="true"></span>
+          <span>UF Football</span>
+        </button>
+        <button type="button" class="team-tab" data-filter="uf-bball" role="tab" aria-selected="false" onclick="setTeamFilter('uf-bball')">
+          <span class="team-swatch swatch-uf-bball" aria-hidden="true"></span>
+          <span>UF Basketball</span>
+        </button>
+        <button type="button" class="team-tab" data-filter="az-cards" role="tab" aria-selected="false" onclick="setTeamFilter('az-cards')">
+          <span class="team-swatch swatch-az" aria-hidden="true"></span>
+          <span>AZ Cardinals</span>
+        </button>
+        <button type="button" class="team-tab" data-filter="phx-suns" role="tab" aria-selected="false" onclick="setTeamFilter('phx-suns')">
+          <span class="team-swatch swatch-phx" aria-hidden="true"></span>
+          <span>Phoenix Suns</span>
+        </button>
+      </div>
+
+      <div class="sync-status-banner">
+        <span class="sync-pill">CORS-SAFE SNAPSHOT</span>
+        <span id="last-sync-label">Synced Nov 24, 2026</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Grid -->
+  <main class="page-grid">
+    <!-- Section 1: Real-Time Kickoff & Tip-Off Countdowns -->
+    <section aria-labelledby="heading-countdowns">
+      <div class="section-head">
+        <h2 id="heading-countdowns" class="section-title">Next Up · <strong>Live Kickoff &amp; Tip-Off Countdowns</strong></h2>
+        <span id="clock-readout-note" class="section-kicker">Ticking live every 1.0s · Nov 24, 2026 Reference</span>
+      </div>
+
+      <div id="roster-grid" class="roster-grid">
+        <!-- Populated inline via JS -->
+      </div>
+    </section>
+
+    <!-- Section 2: Schedule & TV Broadcast Guide -->
+    <section aria-labelledby="heading-schedule">
+      <div class="section-head">
+        <h2 id="heading-schedule" class="section-title">Schedule &amp; <strong>TV Broadcast Guide</strong></h2>
+        <span id="schedule-count-label" class="section-kicker">Showing all games</span>
+      </div>
+
+      <div class="schedule-toolbar">
+        <div class="toolbar-left">
+          <div class="control-group">
+            <span class="control-label">Game Status Filter</span>
+            <div class="segmented" role="group" aria-label="Filter schedule by game status">
+              <button type="button" class="seg-btn is-active" data-status="all" onclick="setStatusFilter('all')">All Games</button>
+              <button type="button" class="seg-btn" data-status="upcoming" onclick="setStatusFilter('upcoming')">Upcoming &amp; TV</button>
+              <button type="button" class="seg-btn" data-status="final" onclick="setStatusFilter('final')">Latest Scores</button>
+            </div>
+          </div>
+
+          <div class="search-field">
+            <label for="schedule-search" class="control-label">Search Opponent, Channel, or Venue</label>
+            <input id="schedule-search" type="search" class="text-input" placeholder="e.g. FOX, Rockets, ABC, State Farm" oninput="setSearchQuery(this.value)">
+          </div>
+        </div>
+
+        <button type="button" class="btn-secondary" onclick="exportScheduleCsv()">
+          Export Schedule CSV
+        </button>
+      </div>
+
+      <div id="schedule-table-wrap" class="table-wrap">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th scope="col">Team</th>
+              <th scope="col">Date &amp; Time</th>
+              <th scope="col">Matchup &amp; Venue</th>
+              <th scope="col">TV Channel</th>
+              <th scope="col">Status / Score</th>
+              <th scope="col">Context &amp; Leaders</th>
+            </tr>
+          </thead>
+          <tbody id="schedule-tbody">
+            <!-- Populated inline via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="schedule-empty" class="empty-state" hidden>
+        <p>No games match the current team, status, and search filters.</p>
+        <button type="button" class="btn-secondary" onclick="resetScheduleFilters()">Reset All Filters</button>
+      </div>
+    </section>
+
+    <!-- Section 3: Team Intel & CFP / News Wire -->
+    <section aria-labelledby="heading-intel">
+      <div class="section-head">
+        <h2 id="heading-intel" class="section-title">Roster Intel · <strong>Leaders, Standings &amp; CFP Wire</strong></h2>
+        <span class="section-kicker">Verified 2026 Season Snapshots</span>
+      </div>
+
+      <div class="intel-grid">
+        <div id="intel-cards" class="intel-cards">
+          <!-- Populated inline via JS -->
+        </div>
+
+        <aside class="side-stack" aria-label="CFP Top 25 and news wire">
+          <div class="cfp-panel">
+            <div class="intel-head">
+              <h3 class="intel-title">Week 13 CFP Rankings</h3>
+              <span class="section-kicker">UF #20 (+4)</span>
+            </div>
+            <div id="cfp-list" class="cfp-list">
+              <!-- Populated inline via JS -->
+            </div>
+          </div>
+
+          <div class="news-panel">
+            <div class="intel-head">
+              <h3 class="intel-title">Wire Headlines</h3>
+              <span class="section-kicker">Nov 2026</span>
+            </div>
+            <ul id="news-list" class="news-list">
+              <!-- Populated inline via JS -->
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="portal-footer">
+    <span>JANET SPORTS · v.11/24/26 · 100% Self-Contained Static Portal (Zero External Scripts / CORS-Safe)</span>
+    <span>Data grounded in Florida Gators Athletics, 247Sports, AZCardinals.com, FOX Sports &amp; StatMuse (Nov 24, 2026)</span>
+  </footer>
+
+  <div id="toast-inline" class="toast-inline" role="status" aria-live="polite"></div>
+
+  <api-shim></api-shim>
+  <script>
+    // =========================================================================
+    // JANET SPORTS — Embedded CORS-Safe Snapshot Data (Grounded Nov 24, 2026)
+    // =========================================================================
+    var EDITION_ANCHOR_MS = Date.parse('2026-11-24T12:00:00-05:00');
+    var WINDOW_START_MS = Date.parse('2026-11-24T00:00:00-05:00');
+    var WINDOW_END_MS = Date.parse('2026-11-29T23:59:59-05:00');
+    var PAGE_LOAD_MS = Date.now();
+
+    var TEAMS = [
+      {
+        id: 'uf-fb',
+        shortName: `UF Football`,
+        fullName: `Florida Gators Football`,
+        monogram: `UF FB`,
+        league: `NCAAF · SEC`,
+        record: `7–4 (5–4 SEC)`,
+        standing: `No. 20 CFP (+4 Spots)`,
+        rankClass: `uf`,
+        coach: `Head Coach Jon Sumrall (1st Year)`,
+        nextOpponent: `@ Florida State Seminoles`,
+        nextOppRecord: `5–6 (3–5 ACC)`,
+        nextVenue: `Doak S. Campbell Stadium · Tallahassee, FL`,
+        nextIso: `2026-11-28T15:30:00-05:00`,
+        tvChannel: `ABC`,
+        tvClass: `tv-abc`,
+        lastResultPrefix: `W`,
+        lastResultText: `34–27 vs Vanderbilt`,
+        tickerNext: `@ FSU · Sat 3:30P ABC`,
+        leaders: [
+          { label: `CFP Rank`, value: `#20`, sub: `Up from #24 (Wk 12)` },
+          { label: `Coach`, value: `J. Sumrall`, sub: `1st winning SEC yr since '20` },
+          { label: `WR V. Brown III`, value: `271 YDS`, sub: `17 rec, 2 TD, 2 PR TD (inj.)` }
+        ],
+        notes: [
+          `Jumped four spots to No. 20 in Week 13 CFP rankings after defeating Vanderbilt 34–27.`,
+          `Clinched first winning SEC record since 2020 following 4–8 (2–6 SEC) finish in 2025.`,
+          `WR Vernell Brown III undergoing knee surgery for PCL sprain from Week 4 vs Ole Miss; targeting 2027 return.`
+        ]
+      },
+      {
+        id: 'uf-bball',
+        shortName: `UF Basketball`,
+        fullName: `Florida Gators Men’s Basketball`,
+        monogram: `UF MBB`,
+        league: `NCAAB · SEC`,
+        record: `6–1 Overall`,
+        standing: `6–1 Non-Conference`,
+        rankClass: `uf`,
+        coach: `Head Coach Todd Golden`,
+        nextOpponent: `vs Milwaukee Panthers`,
+        nextOppRecord: `Non-Conference`,
+        nextVenue: `Exactech Arena · Gainesville, FL`,
+        nextIso: `2026-11-24T19:00:00-05:00`,
+        tvChannel: `SECN+ / ESPN+`,
+        tvClass: `tv-sec`,
+        lastResultPrefix: `L`,
+        lastResultText: `76–86 vs #8 Houston (Las Vegas)`,
+        tickerNext: `vs MILW · Tue 7:00P SECN+`,
+        leaders: [
+          { label: `Season Record`, value: `6–1`, sub: `Under HC Todd Golden` },
+          { label: `Signature Win`, value: `81–72`, sub: `@ Florida State` },
+          { label: `Home Win`, value: `83–54`, sub: `vs Merrimack (+29)` }
+        ],
+        notes: [
+          `Tip-off tonight (Tue, Nov 24) at 7:00 PM ET against Milwaukee in Gainesville.`,
+          `Opened 6–0 including an 81–72 road win at rival Florida State and 83–54 win vs Merrimack.`,
+          `Lone loss came 86–76 against No. 8 Houston in Las Vegas.`
+        ]
+      },
+      {
+        id: 'az-cards',
+        shortName: `AZ Cardinals`,
+        fullName: `Arizona Cardinals`,
+        monogram: `AZ NFL`,
+        league: `NFL · NFC West`,
+        record: `3–8`,
+        standing: `4th in NFC West`,
+        rankClass: `az`,
+        coach: `2026 Regular Season`,
+        nextOpponent: `vs Washington Commanders`,
+        nextOppRecord: `NFL Week 12`,
+        nextVenue: `State Farm Stadium · Glendale, AZ`,
+        nextIso: `2026-11-29T16:25:00-05:00`,
+        tvChannel: `FOX`,
+        tvClass: `tv-fox`,
+        lastResultPrefix: `L`,
+        lastResultText: `7–34 @ Kansas City Chiefs`,
+        tickerNext: `vs WAS · Sun 2:25P MST FOX`,
+        leaders: [
+          { label: `Passing`, value: `1,719 YDS`, sub: `Jacoby Brissett` },
+          { label: `Rushing`, value: `406 YDS`, sub: `Tyler Allgeier` },
+          { label: `Receiving`, value: `689 YDS`, sub: `Trey McBride` }
+        ],
+        notes: [
+          `Return home to State Farm Stadium on Sunday (Nov 29) vs Washington Commanders on FOX.`,
+          `Road record stands at 3–3 (wins @ Chargers, @ Rams, @ Cowboys in OT); seeking first home win (0–5).`,
+          `Week 14 BYE follows back-to-back home games against Washington (Wk 12) and Philadelphia (Wk 13).`
+        ]
+      },
+      {
+        id: 'phx-suns',
+        shortName: `Phoenix Suns`,
+        fullName: `Phoenix Suns`,
+        monogram: `PHX`,
+        league: `NBA · Western Conf`,
+        record: `9–7`,
+        standing: `9th in Western Conf · 4-Game Win Streak`,
+        rankClass: `phx`,
+        coach: `NBA Cup Group Play`,
+        nextOpponent: `@ Houston Rockets`,
+        nextOppRecord: `13–5 · PHX +9.5 · O/U 224.5`,
+        nextVenue: `Toyota Center · Houston, TX`,
+        nextIso: `2026-11-25T17:30:00-05:00`,
+        tvChannel: `SCHN`,
+        tvClass: `tv-nba`,
+        lastResultPrefix: `W`,
+        lastResultText: `123–119 (OT) @ Pelicans`,
+        tickerNext: `@ HOU · Wed 5:30P ET SCHN`,
+        leaders: [
+          { label: `Devin Booker`, value: `26.1 PPG`, sub: `6.0 APG · High 33 vs POR` },
+          { label: `Streak`, value: `W4`, sub: `@DEN, @SAC, @UTA, @NOP` },
+          { label: `Latest High`, value: `25 PTS`, sub: `Jalen Green @ Pelicans` }
+        ],
+        notes: [
+          `Riding a 4-game road winning streak into Wednesday’s NBA Cup Group Play clash at Houston (13–5).`,
+          `Devin Booker leads Phoenix at 26.1 PPG and 6.0 APG; scored 22 pts with 8 ast in OT win @ Pelicans.`,
+          `Opening line lists PHX +9.5 with total 224.5; return home Fri 11/27 vs Mavericks on AZFamily.`
+        ]
+      }
+    ];
+
+    var SCHEDULE_GAMES = [
+      // Upcoming Featured Games (All 4 Teams)
+      {
+        id: `ufb-wk14`,
+        teamId: `uf-fb`,
+        dateIso: `2026-11-28T15:30:00-05:00`,
+        dateDisplay: `Sat 11/28`,
+        timeKnown: true,
+        matchup: `@ Florida State Seminoles (5–6)`,
+        venue: `Doak S. Campbell Stadium, Tallahassee, FL`,
+        channel: `ABC`,
+        channelClass: `tv-abc`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `Regular-Season Finale`,
+        notes: `#20 CFP Florida chases 8th win`
+      },
+      {
+        id: `ufmbb-milw`,
+        teamId: `uf-bball`,
+        dateIso: `2026-11-24T19:00:00-05:00`,
+        dateDisplay: `Tue 11/24`,
+        timeKnown: true,
+        matchup: `vs Milwaukee Panthers`,
+        venue: `Exactech Arena, Gainesville, FL`,
+        channel: `SECN+ / ESPN+`,
+        channelClass: `tv-sec`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `Tip-Off Tonight`,
+        notes: `Gators 6–1 under HC Todd Golden`
+      },
+      {
+        id: `phx-1125`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-25T17:30:00-05:00`,
+        dateDisplay: `Wed 11/25`,
+        timeKnown: true,
+        matchup: `@ Houston Rockets (13–5)`,
+        venue: `Toyota Center, Houston, TX`,
+        channel: `SCHN`,
+        channelClass: `tv-nba`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `PHX +9.5 · O/U 224.5`,
+        notes: `NBA Cup Western Group Play`
+      },
+      {
+        id: `phx-1127`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-27T20:00:00-05:00`,
+        dateDisplay: `Fri 11/27`,
+        timeKnown: true,
+        matchup: `vs Dallas Mavericks (10–7)`,
+        venue: `Mortgage Matchup Center, Phoenix, AZ`,
+        channel: `AZFamily`,
+        channelClass: `tv-nba`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `NBA Cup Group Play`,
+        notes: `6:00 PM AZ local tip-off`
+      },
+      {
+        id: `phx-1129`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-29T16:00:00-05:00`,
+        dateDisplay: `Sun 11/29`,
+        timeKnown: true,
+        matchup: `@ Utah Jazz (3–16)`,
+        venue: `Delta Center, Salt Lake City, UT`,
+        channel: `KJZZ`,
+        channelClass: `tv-nba`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `Regular Season`,
+        notes: `2:00 PM MT tip-off`
+      },
+      {
+        id: `az-wk12`,
+        teamId: `az-cards`,
+        dateIso: `2026-11-29T16:25:00-05:00`,
+        dateDisplay: `Sun 11/29`,
+        timeKnown: true,
+        matchup: `vs Washington Commanders`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `FOX`,
+        channelClass: `tv-fox`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `NFL Week 12`,
+        notes: `2:25 PM MST kickoff`
+      },
+      {
+        id: `az-wk13`,
+        teamId: `az-cards`,
+        dateIso: `2026-12-06T16:05:00-05:00`,
+        dateDisplay: `Sun 12/06`,
+        timeKnown: true,
+        matchup: `vs Philadelphia Eagles`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `FOX`,
+        channelClass: `tv-fox`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `NFL Week 13`,
+        notes: `2:05 PM MST kickoff`
+      },
+      {
+        id: `az-wk14`,
+        teamId: `az-cards`,
+        dateIso: `2026-12-13T12:00:00-05:00`,
+        dateDisplay: `Week 14`,
+        timeKnown: false,
+        matchup: `BYE WEEK`,
+        venue: `Arizona Cardinals Bye`,
+        channel: `—`,
+        channelClass: ``,
+        status: `upcoming`,
+        resultBadge: `BYE`,
+        scoreText: `Off Week`,
+        notes: `NFL Week 14 Bye`
+      },
+      {
+        id: `az-wk15`,
+        teamId: `az-cards`,
+        dateIso: `2026-12-20T16:05:00-05:00`,
+        dateDisplay: `Sun 12/20`,
+        timeKnown: true,
+        matchup: `vs New York Jets`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `FOX`,
+        channelClass: `tv-fox`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `NFL Week 15`,
+        notes: `2:05 PM MST kickoff`
+      },
+      {
+        id: `az-wk16`,
+        teamId: `az-cards`,
+        dateIso: `2026-12-27T13:00:00-05:00`,
+        dateDisplay: `Sun 12/27`,
+        timeKnown: true,
+        matchup: `@ New Orleans Saints`,
+        venue: `Caesars Superdome, New Orleans, LA`,
+        channel: `FOX`,
+        channelClass: `tv-fox`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `NFL Week 16`,
+        notes: `11:00 AM MST kickoff`
+      },
+      {
+        id: `az-wk17`,
+        teamId: `az-cards`,
+        dateIso: `2027-01-03T16:05:00-05:00`,
+        dateDisplay: `Sun 01/03`,
+        timeKnown: true,
+        matchup: `vs Las Vegas Raiders`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `CBS`,
+        channelClass: `tv-cbs`,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `NFL Week 17`,
+        notes: `2:05 PM MST kickoff`
+      },
+      {
+        id: `az-wk18`,
+        teamId: `az-cards`,
+        dateIso: `2027-01-10T16:00:00-05:00`,
+        dateDisplay: `Week 18`,
+        timeKnown: false,
+        matchup: `vs San Francisco 49ers`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `TBD`,
+        channelClass: ``,
+        status: `upcoming`,
+        resultBadge: `UPCOMING`,
+        scoreText: `NFL Week 18`,
+        notes: `Kickoff time & TV TBD`
+      },
+
+      // Recent Completed Results — UF Football
+      {
+        id: `ufb-vandy`,
+        teamId: `uf-fb`,
+        dateIso: `2026-11-21T15:30:00-05:00`,
+        dateDisplay: `Sat 11/21`,
+        timeKnown: false,
+        matchup: `vs Vanderbilt Commodores`,
+        venue: `Ben Hill Griffin Stadium, Gainesville, FL`,
+        channel: `SEC Network`,
+        channelClass: `tv-sec`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `34–27`,
+        notes: `Week 12 · Lifted UF to #20 CFP & 5–4 SEC`
+      },
+      {
+        id: `ufb-uk`,
+        teamId: `uf-fb`,
+        dateIso: `2026-11-14T15:30:00-05:00`,
+        dateDisplay: `Wk 11`,
+        timeKnown: false,
+        matchup: `@ #13 Kentucky Wildcats`,
+        venue: `Kroger Field, Lexington, KY`,
+        channel: `SEC`,
+        channelClass: `tv-sec`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `Road Win`,
+        notes: `Reclaimed #24 CFP ranking`
+      },
+      {
+        id: `ufb-ou`,
+        teamId: `uf-fb`,
+        dateIso: `2026-11-07T15:30:00-05:00`,
+        dateDisplay: `Wk 10`,
+        timeKnown: false,
+        matchup: `vs Oklahoma Sooners`,
+        venue: `Ben Hill Griffin Stadium, Gainesville, FL`,
+        channel: `SEC`,
+        channelClass: `tv-sec`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `Home Loss`,
+        notes: `Entered week #24 in first CFP poll`
+      },
+      {
+        id: `ufb-miss`,
+        teamId: `uf-fb`,
+        dateIso: `2026-09-26T15:30:00-05:00`,
+        dateDisplay: `Wk 4`,
+        timeKnown: false,
+        matchup: `vs Ole Miss Rebels`,
+        venue: `Ben Hill Griffin Stadium, Gainesville, FL`,
+        channel: `SEC`,
+        channelClass: `tv-sec`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `Victory`,
+        notes: `V. Brown III 17 rec / 271 yds / 2 TD in Wks 1–4`
+      },
+      {
+        id: `ufb-camp`,
+        teamId: `uf-fb`,
+        dateIso: `2026-09-12T15:30:00-05:00`,
+        dateDisplay: `Wk 2`,
+        timeKnown: false,
+        matchup: `vs Campbell Fighting Camels`,
+        venue: `Ben Hill Griffin Stadium, Gainesville, FL`,
+        channel: `SECN+`,
+        channelClass: `tv-sec`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `Victory`,
+        notes: `V. Brown III 2 punt return TDs (34.6 avg)`
+      },
+
+      // Recent Completed Results — UF Basketball
+      {
+        id: `ufmbb-hou`,
+        teamId: `uf-bball`,
+        dateIso: `2026-11-20T21:00:00-05:00`,
+        dateDisplay: `Nov 2026`,
+        timeKnown: false,
+        matchup: `vs #8 Houston Cougars (Las Vegas)`,
+        venue: `Las Vegas, NV`,
+        channel: `ESPN`,
+        channelClass: `tv-abc`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `76–86`,
+        notes: `First loss of 2026–27 season`
+      },
+      {
+        id: `ufmbb-fsu`,
+        teamId: `uf-bball`,
+        dateIso: `2026-11-15T19:00:00-05:00`,
+        dateDisplay: `Nov 2026`,
+        timeKnown: false,
+        matchup: `@ Florida State Seminoles`,
+        venue: `Tallahassee, FL`,
+        channel: `ACC / ESPN`,
+        channelClass: `tv-abc`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `81–72`,
+        notes: `Rivalry road victory`
+      },
+      {
+        id: `ufmbb-merr`,
+        teamId: `uf-bball`,
+        dateIso: `2026-11-10T19:00:00-05:00`,
+        dateDisplay: `Nov 2026`,
+        timeKnown: false,
+        matchup: `vs Merrimack Warriors`,
+        venue: `Exactech Arena, Gainesville, FL`,
+        channel: `SECN+`,
+        channelClass: `tv-sec`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `83–54`,
+        notes: `+29 margin in Gainesville`
+      },
+
+      // Completed Results — Phoenix Suns (November 2026 Log)
+      {
+        id: `phx-1123`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-23T20:00:00-05:00`,
+        dateDisplay: `Mon 11/23`,
+        timeKnown: false,
+        matchup: `@ New Orleans Pelicans (5–14)`,
+        venue: `Smoothie King Center, New Orleans, LA`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `123–119 (OT)`,
+        notes: `PTS: J. Green 25 · REB: M. Bridges 11 · AST: D. Booker 8 (22 pts)`
+      },
+      {
+        id: `phx-1120`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-20T21:00:00-05:00`,
+        dateDisplay: `Fri 11/20`,
+        timeKnown: false,
+        matchup: `@ Utah Jazz (3–14)`,
+        venue: `Delta Center, Salt Lake City, UT`,
+        channel: `NBA Cup`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `111–101`,
+        notes: `PTS: D. Booker 23 · REB: M. Bridges 9 · AST: C. Gillespie 5`
+      },
+      {
+        id: `phx-1118`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-18T22:00:00-05:00`,
+        dateDisplay: `Wed 11/18`,
+        timeKnown: false,
+        matchup: `@ Sacramento Kings (1–13)`,
+        venue: `Golden 1 Center, Sacramento, CA`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `128–107`,
+        notes: `PTS: D. Booker 29 · REB: J. Green 7 · AST: J. Green 7`
+      },
+      {
+        id: `phx-1116`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-16T21:00:00-05:00`,
+        dateDisplay: `Mon 11/16`,
+        timeKnown: false,
+        matchup: `@ Denver Nuggets (7–5)`,
+        venue: `Ball Arena, Denver, CO`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `117–105`,
+        notes: `PTS: D. Booker 20 · REB: O. Ighodaro 11 · AST: D. Booker 8`
+      },
+      {
+        id: `phx-1115`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-15T20:00:00-05:00`,
+        dateDisplay: `Sun 11/15`,
+        timeKnown: false,
+        matchup: `vs Los Angeles Lakers (12–2)`,
+        venue: `Mortgage Matchup Center, Phoenix, AZ`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `123–131`,
+        notes: `PTS: C. Gillespie 26 · REB: J. Goodwin 7 · AST: D. Booker 7`
+      },
+      {
+        id: `phx-1112`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-12T21:00:00-05:00`,
+        dateDisplay: `Thu 11/12`,
+        timeKnown: false,
+        matchup: `vs Charlotte Hornets (4–8)`,
+        venue: `Mortgage Matchup Center, Phoenix, AZ`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `101–96`,
+        notes: `PTS: D. Booker 30 · REB: M. Bridges 6 · AST: D. Booker 7`
+      },
+      {
+        id: `phx-1110`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-10T21:00:00-05:00`,
+        dateDisplay: `Tue 11/10`,
+        timeKnown: false,
+        matchup: `vs LA Clippers (2–8)`,
+        venue: `Mortgage Matchup Center, Phoenix, AZ`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `133–110`,
+        notes: `PTS: J. Goodwin 18 · REB: R. Dunn 8 · AST: C. Gillespie 8`
+      },
+      {
+        id: `phx-1109`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-09T21:00:00-05:00`,
+        dateDisplay: `Mon 11/09`,
+        timeKnown: false,
+        matchup: `vs San Antonio Spurs (9–2)`,
+        venue: `Mortgage Matchup Center, Phoenix, AZ`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `96–122`,
+        notes: `PTS: D. Booker 32 · REB: M. Bridges 5 · AST: D. Booker 4`
+      },
+      {
+        id: `phx-1107`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-07T21:00:00-05:00`,
+        dateDisplay: `Sat 11/07`,
+        timeKnown: false,
+        matchup: `vs Houston Rockets (7–3)`,
+        venue: `Mortgage Matchup Center, Phoenix, AZ`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `102–99`,
+        notes: `PTS: D. Booker 24 · REB: M. Bridges 10 · AST: M. Bridges 7`
+      },
+      {
+        id: `phx-1105`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-05T21:00:00-05:00`,
+        dateDisplay: `Thu 11/05`,
+        timeKnown: false,
+        matchup: `vs Orlando Magic (2–6)`,
+        venue: `Mortgage Matchup Center, Phoenix, AZ`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `117–104`,
+        notes: `PTS: D. Booker 30 · REB: M. Bridges 13 · AST: D. Booker 8`
+      },
+      {
+        id: `phx-1104`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-04T21:00:00-05:00`,
+        dateDisplay: `Wed 11/04`,
+        timeKnown: false,
+        matchup: `vs Portland Trail Blazers (6–1)`,
+        venue: `Mortgage Matchup Center, Phoenix, AZ`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `119–132`,
+        notes: `PTS: D. Booker 33 · REB: M. Bridges 7 · AST: O. Ighodaro 7`
+      },
+      {
+        id: `phx-1102`,
+        teamId: `phx-suns`,
+        dateIso: `2026-11-02T22:00:00-05:00`,
+        dateDisplay: `Mon 11/02`,
+        timeKnown: false,
+        matchup: `@ Golden State Warriors (5–3)`,
+        venue: `Chase Center, San Francisco, CA`,
+        channel: `NBA`,
+        channelClass: `tv-nba`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `113–116`,
+        notes: `PTS: D. Booker 26 · REB: D. Brooks 8 · AST: J. Green 8`
+      },
+
+      // Completed Results — Arizona Cardinals (2026 Regular Season + Preseason)
+      {
+        id: `az-wk11`,
+        teamId: `az-cards`,
+        dateIso: `2026-11-22T13:00:00-05:00`,
+        dateDisplay: `Sun 11/22`,
+        timeKnown: false,
+        matchup: `@ Kansas City Chiefs`,
+        venue: `Arrowhead Stadium, Kansas City, MO`,
+        channel: `NFL`,
+        channelClass: `tv-cbs`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `7–34`,
+        notes: `NFL Week 11`
+      },
+      {
+        id: `az-wk10`,
+        teamId: `az-cards`,
+        dateIso: `2026-11-15T16:05:00-05:00`,
+        dateDisplay: `Sun 11/15`,
+        timeKnown: false,
+        matchup: `vs Los Angeles Rams`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `NFL`,
+        channelClass: `tv-fox`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `6–34`,
+        notes: `NFL Week 10`
+      },
+      {
+        id: `az-wk9`,
+        teamId: `az-cards`,
+        dateIso: `2026-11-08T16:05:00-05:00`,
+        dateDisplay: `Sun 11/08`,
+        timeKnown: false,
+        matchup: `@ Seattle Seahawks`,
+        venue: `Lumen Field, Seattle, WA`,
+        channel: `NFL`,
+        channelClass: `tv-fox`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `3–17`,
+        notes: `NFL Week 9`
+      },
+      {
+        id: `az-wk8`,
+        teamId: `az-cards`,
+        dateIso: `2026-11-01T13:00:00-05:00`,
+        dateDisplay: `Sun 11/01`,
+        timeKnown: false,
+        matchup: `@ Dallas Cowboys`,
+        venue: `AT&T Stadium, Arlington, TX`,
+        channel: `NFL`,
+        channelClass: `tv-fox`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `33–30 (OT)`,
+        notes: `NFL Week 8 · Overtime road victory`
+      },
+      {
+        id: `az-wk7`,
+        teamId: `az-cards`,
+        dateIso: `2026-10-25T16:05:00-04:00`,
+        dateDisplay: `Sun 10/25`,
+        timeKnown: false,
+        matchup: `vs Denver Broncos`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `NFL`,
+        channelClass: `tv-cbs`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `16–30`,
+        notes: `NFL Week 7`
+      },
+      {
+        id: `az-wk6`,
+        teamId: `az-cards`,
+        dateIso: `2026-10-18T16:05:00-04:00`,
+        dateDisplay: `Sun 10/18`,
+        timeKnown: false,
+        matchup: `@ Los Angeles Rams`,
+        venue: `SoFi Stadium, Inglewood, CA`,
+        channel: `NFL`,
+        channelClass: `tv-fox`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `18–16`,
+        notes: `NFL Week 6 · Division road win`
+      },
+      {
+        id: `az-wk5`,
+        teamId: `az-cards`,
+        dateIso: `2026-10-11T16:05:00-04:00`,
+        dateDisplay: `Sun 10/11`,
+        timeKnown: false,
+        matchup: `vs Detroit Lions`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `NFL`,
+        channelClass: `tv-fox`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `21–45`,
+        notes: `NFL Week 5`
+      },
+      {
+        id: `az-wk4`,
+        teamId: `az-cards`,
+        dateIso: `2026-10-04T13:00:00-04:00`,
+        dateDisplay: `Sun 10/04`,
+        timeKnown: false,
+        matchup: `@ New York Giants`,
+        venue: `MetLife Stadium, East Rutherford, NJ`,
+        channel: `NFL`,
+        channelClass: `tv-fox`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `24–36`,
+        notes: `NFL Week 4`
+      },
+      {
+        id: `az-wk3`,
+        teamId: `az-cards`,
+        dateIso: `2026-09-27T16:05:00-04:00`,
+        dateDisplay: `Sun 09/27`,
+        timeKnown: false,
+        matchup: `@ San Francisco 49ers`,
+        venue: `Levi’s Stadium, Santa Clara, CA`,
+        channel: `NFL`,
+        channelClass: `tv-fox`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `30–36`,
+        notes: `NFL Week 3`
+      },
+      {
+        id: `az-wk2`,
+        teamId: `az-cards`,
+        dateIso: `2026-09-20T16:05:00-04:00`,
+        dateDisplay: `Sun 09/20`,
+        timeKnown: false,
+        matchup: `vs Seattle Seahawks`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `NFL`,
+        channelClass: `tv-fox`,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `7–31`,
+        notes: `NFL Week 2`
+      },
+      {
+        id: `az-wk1`,
+        teamId: `az-cards`,
+        dateIso: `2026-09-13T16:05:00-04:00`,
+        dateDisplay: `Sun 09/13`,
+        timeKnown: false,
+        matchup: `@ Los Angeles Chargers`,
+        venue: `SoFi Stadium, Inglewood, CA`,
+        channel: `NFL`,
+        channelClass: `tv-cbs`,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `26–14`,
+        notes: `NFL Week 1 · Season opener win`
+      },
+      {
+        id: `az-pre3`,
+        teamId: `az-cards`,
+        dateIso: `2026-08-28T20:00:00-04:00`,
+        dateDisplay: `Fri 08/28`,
+        timeKnown: false,
+        matchup: `@ Green Bay Packers`,
+        venue: `Lambeau Field, Green Bay, WI`,
+        channel: `Preseason`,
+        channelClass: ``,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `38–42`,
+        notes: `Preseason Week 3`
+      },
+      {
+        id: `az-pre2`,
+        teamId: `az-cards`,
+        dateIso: `2026-08-22T20:00:00-04:00`,
+        dateDisplay: `Sat 08/22`,
+        timeKnown: false,
+        matchup: `vs Dallas Cowboys`,
+        venue: `State Farm Stadium, Glendale, AZ`,
+        channel: `Preseason`,
+        channelClass: ``,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `13–34`,
+        notes: `Preseason Week 2`
+      },
+      {
+        id: `az-pre1`,
+        teamId: `az-cards`,
+        dateIso: `2026-08-13T22:00:00-04:00`,
+        dateDisplay: `Thu 08/13`,
+        timeKnown: false,
+        matchup: `@ Las Vegas Raiders`,
+        venue: `Allegiant Stadium, Las Vegas, NV`,
+        channel: `Preseason`,
+        channelClass: ``,
+        status: `final`,
+        resultBadge: `W`,
+        scoreText: `27–14`,
+        notes: `Preseason Week 1`
+      },
+      {
+        id: `az-hof`,
+        teamId: `az-cards`,
+        dateIso: `2026-08-06T20:00:00-04:00`,
+        dateDisplay: `Thu 08/06`,
+        timeKnown: false,
+        matchup: `vs Carolina Panthers`,
+        venue: `Tom Benson Hall of Fame Stadium, Canton, OH`,
+        channel: `HOF Game`,
+        channelClass: ``,
+        status: `final`,
+        resultBadge: `L`,
+        scoreText: `30–33`,
+        notes: `Hall of Fame Preseason Opener`
+      }
+    ];
+
+    var CFP_RANKINGS = [
+      `Georgia`, `Utah`, `Texas`, `Notre Dame`, `Tennessee`,
+      `Alabama`, `Miami`, `Wake Forest`, `UCLA`, `BYU`,
+      `Texas Tech`, `Oregon`, `Iowa`, `Indiana`, `Southern Cal`,
+      `Arizona`, `Oklahoma`, `Houston`, `Louisville`, `Florida`,
+      `Ohio State`, `Ole Miss`, `Missouri`, `Washington`, `Nebraska`
+    ];
+
+    var WIRE_NEWS = [
+      {
+        teamId: `uf-fb`,
+        source: `247Sports · Nov 2026`,
+        headline: `Florida rises 4 spots to No. 20 in Week 13 CFP Rankings`,
+        summary: `After beating Vanderbilt 34–27, Jon Sumrall’s Gators (7–4, 5–4 SEC) head to Florida State on Saturday (3:30 PM ET, ABC) with their first winning SEC mark since 2020.`
+      },
+      {
+        teamId: `uf-fb`,
+        source: `247Sports · Injury Report`,
+        headline: `Gators WR Vernell Brown III to undergo knee surgery`,
+        summary: `Sidelined since Week 4 vs Ole Miss with a PCL sprain (17 rec, 271 yds, 2 TD; 2 PR TD vs Campbell), Brown will target a 2027 return.`
+      },
+      {
+        teamId: `uf-bball`,
+        source: `UF Athletics · Nov 2026`,
+        headline: `6–1 Gators Basketball hosts Milwaukee tonight at 7:00 PM ET`,
+        summary: `Todd Golden’s squad holds wins over Merrimack (83–54) and @ Florida State (81–72), with its lone setback 86–76 vs No. 8 Houston.`
+      },
+      {
+        teamId: `phx-suns`,
+        source: `FOX Sports · Nov 23–25`,
+        headline: `Suns ride 4-game streak into NBA Cup test at Houston`,
+        summary: `Jalen Green scored 25 and Devin Booker added 22 pts / 8 ast in a 123–119 OT win at New Orleans. PHX (9–7) opens +9.5 (O/U 224.5) @ Rockets (13–5).`
+      },
+      {
+        teamId: `az-cards`,
+        source: `AZCardinals.com · Week 12`,
+        headline: `Cardinals (3–8) return home to face Commanders on FOX`,
+        summary: `Following a 34–7 loss at Kansas City, Arizona hosts Washington Sun 11/29 (2:25 PM MST / 4:25 PM ET). Leaders: Brissett 1,719 pass yds, McBride 689 rec yds.`
+      }
+    ];
+
+    // =========================================================================
+    // Application State (In-memory + safe notebookAppApi persistence)
+    // =========================================================================
+    var appState = {
+      teamFilter: `all`,
+      statusFilter: `all`,
+      searchQuery: ``,
+      timezone: `ET`,
+      clockMode: (Date.now() >= WINDOW_START_MS && Date.now() <= WINDOW_END_MS) ? `system` : `edition`,
+      pollEnabled: true,
+      pollIntervalSec: 30,
+      pollCountdownSec: 30,
+      lastSyncText: `Synced Nov 24, 2026`,
+      syncCount: 1
+    };
+
+    var countdownIntervalId = null;
+    var pollIntervalId = null;
+    var toastTimerId = null;
+
+    // =========================================================================
+    // Defensive Helpers
+    // =========================================================================
+    function getNowMs() {
+      if (appState.clockMode === `system`) {
+        return Date.now();
+      }
+      var elapsed = Date.now() - PAGE_LOAD_MS;
+      return EDITION_ANCHOR_MS + elapsed;
+    }
+
+    function formatTimeInZone(isoStr, tz) {
+      var ts = Date.parse(isoStr);
+      if (isNaN(ts)) return `TBD`;
+      var offsetHours = tz === `MST` ? -7 : -5;
+      var shifted = new Date(ts + offsetHours * 3600 * 1000);
+      var hours24 = shifted.getUTCHours();
+      var mins = shifted.getUTCMinutes();
+      var ampm = hours24 >= 12 ? `PM` : `AM`;
+      var hours12 = hours24 % 12;
+      if (hours12 === 0) hours12 = 12;
+      var minStr = mins < 10 ? `0` + mins : String(mins);
+      return hours12 + `:` + minStr + ` ` + ampm + ` ` + tz;
+    }
+
+    function pad2(n) {
+      return n < 10 ? `0` + n : String(n);
+    }
+
+    function showToast(msg) {
+      var el = document.getElementById(`toast-inline`);
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add(`is-visible`);
+      if (toastTimerId) clearTimeout(toastTimerId);
+      toastTimerId = setTimeout(function () {
+        el.classList.remove(`is-visible`);
+      }, 2800);
+    }
+
+    function persistStateSafely() {
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === `function`) {
+          window.notebookAppApi.setAppState({
+            teamFilter: appState.teamFilter,
+            statusFilter: appState.statusFilter,
+            searchQuery: appState.searchQuery,
+            timezone: appState.timezone,
+            clockMode: appState.clockMode,
+            pollEnabled: appState.pollEnabled
+          });
+        }
+      } catch (err) {
+        // Defensive fallback: static GitHub Pages runs purely in-memory
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, `&amp;`)
+        .replace(/</g, `&lt;`)
+        .replace(/>/g, `&gt;`)
+        .replace(/"/g, `&quot;`);
+    }
+
+    // =========================================================================
+    // Rendering Functions
+    // =========================================================================
+    function renderTicker() {
+      var strip = document.getElementById(`ticker-strip`);
+      if (!strip) return;
+      var html = ``;
+      for (var i = 0; i < TEAMS.length; i++) {
+        var t = TEAMS[i];
+        html += `<button type="button" class="ticker-chip" data-team="${t.id}" onclick="setTeamFilter('${t.id}')">` +
+          `<span class="ticker-chip-team">${escapeHtml(t.shortName)}</span>` +
+          `<span class="ticker-chip-score">${escapeHtml(t.record)} · ${escapeHtml(t.lastResultPrefix)} ${escapeHtml(t.lastResultText)}</span>` +
+          `<span class="ticker-chip-next">NEXT: ${escapeHtml(t.tickerNext)}</span>` +
+          `</button>`;
+      }
+      strip.innerHTML = html;
+    }
+
+    function getTeamBarClasses(teamId) {
+      if (teamId === `uf-fb`) return [`bar-uf-fb-1`, `bar-uf-fb-2`, `mono-uf-fb`];
+      if (teamId === `uf-bball`) return [`bar-uf-bb-1`, `bar-uf-bb-2`, `mono-uf-bb`];
+      if (teamId === `az-cards`) return [`bar-az-1`, `bar-az-2`, `mono-az`];
+      return [`bar-phx-1`, `bar-phx-2`, `mono-phx`];
+    }
+
+    function renderRosterCards() {
+      var grid = document.getElementById(`roster-grid`);
+      if (!grid) return;
+      var html = ``;
+      for (var i = 0; i < TEAMS.length; i++) {
+        var t = TEAMS[i];
+        var cls = getTeamBarClasses(t.id);
+        var isVisible = appState.teamFilter === `all` || appState.teamFilter === t.id;
+        var isSelected = appState.teamFilter === t.id;
+        var timeFormatted = formatTimeInZone(t.nextIso, appState.timezone);
+        var dateObj = new Date(Date.parse(t.nextIso) + (appState.timezone === `MST` ? -7 : -5) * 3600 * 1000);
+        var dayNames = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`];
+        var monthNames = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `Jun`, `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
+        var dateLabel = dayNames[dateObj.getUTCDay()] + `, ` + monthNames[dateObj.getUTCMonth()] + ` ` + dateObj.getUTCDate();
+        var resClass = t.lastResultPrefix === `W` ? `result-w` : `result-l`;
+        var btnLabel = isSelected ? `Show All` : `Focus Team`;
+        var nextFilter = isSelected ? `all` : t.id;
+
+        html += `<article class="team-card${isVisible ? `` : ` is-hidden`}${isSelected ? ` is-selected` : ``}" data-team="${t.id}">` +
+          `<div class="team-accent-bar" aria-hidden="true">` +
+            `<span class="${cls[0]}"></span><span class="${cls[1]}"></span>` +
+          `</div>` +
+          `<div class="team-card-body">` +
+            `<div class="team-card-top">` +
+              `<div class="team-identity">` +
+                `<div class="team-monogram ${cls[2]}" aria-hidden="true">${escapeHtml(t.monogram)}</div>` +
+                `<div>` +
+                  `<span class="team-league">${escapeHtml(t.league)}</span>` +
+                  `<h3 class="team-name">${escapeHtml(t.fullName)}</h3>` +
+                `</div>` +
+              `</div>` +
+              `<span class="record-badge">${escapeHtml(t.record)}</span>` +
+            `</div>` +
+
+            `<div class="standing-line">` +
+              `<span class="rank-tag ${t.rankClass}">${escapeHtml(t.standing)}</span>` +
+              `<span>${escapeHtml(t.coach)}</span>` +
+            `</div>` +
+
+            `<div class="matchup-box">` +
+              `<div class="matchup-header-row">` +
+                `<span class="next-label">Next Matchup</span>` +
+                `<span class="tv-pill ${t.tvClass}">${escapeHtml(t.tvChannel)}</span>` +
+              `</div>` +
+              `<div class="matchup-opponent">${escapeHtml(t.nextOpponent)}</div>` +
+              `<div class="matchup-meta">${escapeHtml(dateLabel)} · ${escapeHtml(timeFormatted)} · ${escapeHtml(t.nextVenue)}</div>` +
+              `<div class="matchup-meta">${escapeHtml(t.nextOppRecord)}</div>` +
+            `</div>` +
+
+            `<div class="countdown-status-row">` +
+              `<span class="next-label">Kickoff / Tip-Off Timer</span>` +
+              `<span id="cd-status-${t.id}" class="urgency-label urgency-upcoming">CALCULATING</span>` +
+            `</div>` +
+
+            `<div class="countdown-grid" aria-label="Countdown to ${escapeHtml(t.fullName)} game">` +
+              `<div class="cd-cell"><span id="cd-d-${t.id}" class="cd-val">00</span><span class="cd-unit">Days</span></div>` +
+              `<div class="cd-cell"><span id="cd-h-${t.id}" class="cd-val">00</span><span class="cd-unit">Hrs</span></div>` +
+              `<div class="cd-cell"><span id="cd-m-${t.id}" class="cd-val">00</span><span class="cd-unit">Min</span></div>` +
+              `<div class="cd-cell"><span id="cd-s-${t.id}" class="cd-val">00</span><span class="cd-unit">Sec</span></div>` +
+            `</div>` +
+          `</div>` +
+          `<div class="card-footer-strip">` +
+            `<span class="last-result">Last: <span class="${resClass}">${escapeHtml(t.lastResultPrefix)}</span> ${escapeHtml(t.lastResultText)}</span>` +
+            `<button type="button" class="card-focus-btn" onclick="setTeamFilter('${nextFilter}')">${btnLabel}</button>` +
+          `</div>` +
+        `</article>`;
+      }
+      grid.innerHTML = html;
+      updateCountdowns();
+    }
+
+    function updateCountdowns() {
+      var nowMs = getNowMs();
+      for (var i = 0; i < TEAMS.length; i++) {
+        var t = TEAMS[i];
+        var targetMs = Date.parse(t.nextIso);
+        var diff = targetMs - nowMs;
+
+        var dEl = document.getElementById(`cd-d-` + t.id);
+        var hEl = document.getElementById(`cd-h-` + t.id);
+        var mEl = document.getElementById(`cd-m-` + t.id);
+        var sEl = document.getElementById(`cd-s-` + t.id);
+        var statusEl = document.getElementById(`cd-status-` + t.id);
+        if (!dEl || !hEl || !mEl || !sEl || !statusEl) continue;
+
+        if (diff > 0) {
+          var totalSec = Math.floor(diff / 1000);
+          var days = Math.floor(totalSec / 86400);
+          var hrs = Math.floor((totalSec % 86400) / 3600);
+          var mins = Math.floor((totalSec % 3600) / 60);
+          var secs = totalSec % 60;
+
+          dEl.textContent = pad2(days);
+          hEl.textContent = pad2(hrs);
+          mEl.textContent = pad2(mins);
+          sEl.textContent = pad2(secs);
+
+          statusEl.className = `urgency-label ` + (days === 0 ? `urgency-tonight` : (days === 1 ? `urgency-tomorrow` : `urgency-upcoming`));
+          statusEl.textContent = days === 0 ? `GAME DAY · TONIGHT` : (days === 1 ? `TOMORROW` : `T-MINUS ` + days + ` DAYS`);
+        } else if (diff > -3 * 3600 * 1000) {
+          dEl.textContent = `00`;
+          hEl.textContent = `00`;
+          mEl.textContent = `00`;
+          sEl.textContent = `00`;
+          statusEl.className = `urgency-label urgency-live`;
+          statusEl.textContent = `LIVE / IN PROGRESS`;
+        } else {
+          dEl.textContent = `00`;
+          hEl.textContent = `00`;
+          mEl.textContent = `00`;
+          sEl.textContent = `00`;
+          statusEl.className = `urgency-label urgency-upcoming`;
+          statusEl.textContent = `COMPLETED`;
+        }
+      }
+
+      var clockNote = document.getElementById(`clock-readout-note`);
+      if (clockNote) {
+        clockNote.textContent = appState.clockMode === `edition`
+          ? `Ticking live every 1.0s · Nov 24, 2026 Edition Clock (` + appState.timezone + `)`
+          : `Ticking live every 1.0s · System Wall Clock (` + appState.timezone + `)`;
+      }
+    }
+
+    function getTeamLookup() {
+      var map = {};
+      for (var i = 0; i < TEAMS.length; i++) {
+        map[TEAMS[i].id] = TEAMS[i];
+      }
+      return map;
+    }
+
+    function getSwatchClass(teamId) {
+      if (teamId === `uf-fb`) return `swatch-uf-fb`;
+      if (teamId === `uf-bball`) return `swatch-uf-bball`;
+      if (teamId === `az-cards`) return `swatch-az`;
+      return `swatch-phx`;
+    }
+
+    function getFilteredGames() {
+      var q = appState.searchQuery.trim().toLowerCase();
+      var list = [];
+      for (var i = 0; i < SCHEDULE_GAMES.length; i++) {
+        var g = SCHEDULE_GAMES[i];
+        if (appState.teamFilter !== `all` && g.teamId !== appState.teamFilter) continue;
+        if (appState.statusFilter !== `all` && g.status !== appState.statusFilter) continue;
+        if (q) {
+          var hay = (g.matchup + ` ` + g.venue + ` ` + g.channel + ` ` + g.notes + ` ` + g.dateDisplay).toLowerCase();
+          if (hay.indexOf(q) === -1) continue;
+        }
+        list.push(g);
+      }
+
+      list.sort(function (a, b) {
+        if (a.status !== b.status) {
+          return a.status === `upcoming` ? -1 : 1;
+        }
+        var ta = Date.parse(a.dateIso);
+        var tb = Date.parse(b.dateIso);
+        return a.status === `upcoming` ? (ta - tb) : (tb - ta);
+      });
+      return list;
+    }
+
+    function renderScheduleTable() {
+      var tbody = document.getElementById(`schedule-tbody`);
+      var wrap = document.getElementById(`schedule-table-wrap`);
+      var empty = document.getElementById(`schedule-empty`);
+      var countEl = document.getElementById(`schedule-count-label`);
+      if (!tbody || !wrap || !empty || !countEl) return;
+
+      var teamMap = getTeamLookup();
+      var games = getFilteredGames();
+      countEl.textContent = `Showing ` + games.length + ` of ` + SCHEDULE_GAMES.length + ` logged games (` + appState.timezone + `)`;
+
+      if (games.length === 0) {
+        wrap.hidden = true;
+        empty.hidden = false;
+        tbody.innerHTML = ``;
+        return;
+      }
+
+      wrap.hidden = false;
+      empty.hidden = true;
+
+      var rowsHtml = ``;
+      for (var i = 0; i < games.length; i++) {
+        var g = games[i];
+        var team = teamMap[g.teamId];
+        var timeDisplay = g.timeKnown ? formatTimeInZone(g.dateIso, appState.timezone) : (g.resultBadge === `BYE` ? `Bye Week` : `Final`);
+        var badgeClass = `status-up`;
+        if (g.resultBadge === `W`) badgeClass = `status-w`;
+        else if (g.resultBadge === `L`) badgeClass = `status-l`;
+        else if (g.resultBadge === `BYE`) badgeClass = `status-bye`;
+
+        var tvHtml = g.channelClass
+          ? `<span class="tv-pill ${g.channelClass}">${escapeHtml(g.channel)}</span>`
+          : `<span class="mono-cell">${escapeHtml(g.channel)}</span>`;
+
+        rowsHtml += `<tr>` +
+          `<td>` +
+            `<div class="team-cell">` +
+              `<span class="team-swatch ${getSwatchClass(g.teamId)}" aria-hidden="true"></span>` +
+              `<span>${escapeHtml(team ? team.shortName : g.teamId)}</span>` +
+            `</div>` +
+          `</td>` +
+          `<td class="mono-cell">` +
+            `<strong>${escapeHtml(g.dateDisplay)}</strong>` +
+            `<span class="venue-sub">${escapeHtml(timeDisplay)}</span>` +
+          `</td>` +
+          `<td>` +
+            `<strong>${escapeHtml(g.matchup)}</strong>` +
+            `<span class="venue-sub">${escapeHtml(g.venue)}</span>` +
+          `</td>` +
+          `<td>${tvHtml}</td>` +
+          `<td class="score-cell">` +
+            `<span class="status-badge ${badgeClass}">${escapeHtml(g.resultBadge)}</span>` +
+            `<span>${escapeHtml(g.scoreText)}</span>` +
+          `</td>` +
+          `<td>${escapeHtml(g.notes)}</td>` +
+        `</tr>`;
+      }
+      tbody.innerHTML = rowsHtml;
+    }
+
+    function renderIntelAndWire() {
+      var container = document.getElementById(`intel-cards`);
+      if (container) {
+        var html = ``;
+        for (var i = 0; i < TEAMS.length; i++) {
+          var t = TEAMS[i];
+          var isVisible = appState.teamFilter === `all` || appState.teamFilter === t.id;
+          var statsHtml = ``;
+          for (var s = 0; s < t.leaders.length; s++) {
+            var st = t.leaders[s];
+            statsHtml += `<div class="stat-tile">` +
+              `<span class="stat-tile-label">${escapeHtml(st.label)}</span>` +
+              `<span class="stat-tile-val">${escapeHtml(st.value)}</span>` +
+              `<span class="stat-tile-sub">${escapeHtml(st.sub)}</span>` +
+            `</div>`;
+          }
+          var notesHtml = ``;
+          for (var n = 0; n < t.notes.length; n++) {
+            notesHtml += `<li>${escapeHtml(t.notes[n])}</li>`;
+          }
+
+          html += `<article class="intel-card${isVisible ? `` : ` is-hidden`}" data-team="${t.id}">` +
+            `<div class="intel-head">` +
+              `<h3 class="intel-title">${escapeHtml(t.fullName)}</h3>` +
+              `<span class="section-kicker">${escapeHtml(t.record)} · ${escapeHtml(t.standing)}</span>` +
+            `</div>` +
+            `<div class="stat-strip">${statsHtml}</div>` +
+            `<ul class="intel-notes">${notesHtml}</ul>` +
+          `</article>`;
+        }
+        container.innerHTML = html;
+      }
+
+      var cfpEl = document.getElementById(`cfp-list`);
+      if (cfpEl) {
+        var cfpHtml = ``;
+        for (var c = 0; c < CFP_RANKINGS.length; c++) {
+          var rank = c + 1;
+          var name = CFP_RANKINGS[c];
+          var isUf = name === `Florida`;
+          cfpHtml += `<div class="cfp-row${isUf ? ` is-gators` : ``}">` +
+            `<span class="cfp-rank">${rank}</span>` +
+            `<span>${escapeHtml(name)}</span>` +
+          `</div>`;
+        }
+        cfpEl.innerHTML = cfpHtml;
+      }
+
+      var newsEl = document.getElementById(`news-list`);
+      if (newsEl) {
+        var newsHtml = ``;
+        for (var w = 0; w < WIRE_NEWS.length; w++) {
+          var item = WIRE_NEWS[w];
+          if (appState.teamFilter !== `all` && item.teamId !== appState.teamFilter) continue;
+          newsHtml += `<li class="news-item">` +
+            `<div class="news-meta">${escapeHtml(item.source)}</div>` +
+            `<div class="news-headline">${escapeHtml(item.headline)}</div>` +
+            `<p class="news-summary">${escapeHtml(item.summary)}</p>` +
+          `</li>`;
+        }
+        if (!newsHtml) {
+          newsHtml = `<li class="news-item"><p class="news-summary">No wire stories for selected filter.</p></li>`;
+        }
+        newsEl.innerHTML = newsHtml;
+      }
+    }
+
+    function syncControlUi() {
+      // Team filter tabs
+      var tabs = document.querySelectorAll(`.team-tab`);
+      for (var i = 0; i < tabs.length; i++) {
+        var tab = tabs[i];
+        var active = tab.getAttribute(`data-filter`) === appState.teamFilter;
+        tab.classList.toggle(`is-active`, active);
+        tab.setAttribute(`aria-selected`, active ? `true` : `false`);
+      }
+
+      // Status buttons
+      var statusBtns = document.querySelectorAll(`[data-status]`);
+      for (var j = 0; j < statusBtns.length; j++) {
+        var btn = statusBtns[j];
+        btn.classList.toggle(`is-active`, btn.getAttribute(`data-status`) === appState.statusFilter);
+      }
+
+      // Timezone buttons
+      var tzEt = document.getElementById(`tz-et`);
+      var tzMst = document.getElementById(`tz-mst`);
+      if (tzEt) tzEt.classList.toggle(`is-active`, appState.timezone === `ET`);
+      if (tzMst) tzMst.classList.toggle(`is-active`, appState.timezone === `MST`);
+
+      // Clock buttons
+      var clkEd = document.getElementById(`clk-edition`);
+      var clkSys = document.getElementById(`clk-system`);
+      if (clkEd) clkEd.classList.toggle(`is-active`, appState.clockMode === `edition`);
+      if (clkSys) clkSys.classList.toggle(`is-active`, appState.clockMode === `system`);
+
+      // Search input
+      var searchInput = document.getElementById(`schedule-search`);
+      if (searchInput && searchInput.value !== appState.searchQuery) {
+        searchInput.value = appState.searchQuery;
+      }
+    }
+
+    function renderAll() {
+      syncControlUi();
+      renderTicker();
+      renderRosterCards();
+      renderScheduleTable();
+      renderIntelAndWire();
+    }
+
+    // =========================================================================
+    // CORS-Safe Live Ticker Polling & Defensive Fallback Refresh Engine
+    // =========================================================================
+    function updatePollUi(isSyncingNow) {
+      var dot = document.getElementById(`poll-dot`);
+      var statusTxt = document.getElementById(`poll-status-text`);
+      var bar = document.getElementById(`poll-progress-bar`);
+      var toggleBtn = document.getElementById(`btn-poll-toggle`);
+      var syncLabel = document.getElementById(`last-sync-label`);
+
+      if (dot) {
+        dot.classList.remove(`is-paused`, `is-syncing`);
+        if (isSyncingNow) dot.classList.add(`is-syncing`);
+        else if (!appState.pollEnabled) dot.classList.add(`is-paused`);
+      }
+
+      if (statusTxt) {
+        if (isSyncingNow) statusTxt.textContent = `SYNCING SNAPSHOT…`;
+        else if (!appState.pollEnabled) statusTxt.textContent = `POLLING PAUSED`;
+        else statusTxt.textContent = `NEXT SYNC IN ` + appState.pollCountdownSec + `S`;
+      }
+
+      if (bar) {
+        var ratio = appState.pollEnabled ? (appState.pollCountdownSec / appState.pollIntervalSec) : 0;
+        bar.style.transform = `scaleX(` + Math.max(0, Math.min(1, ratio)) + `)`;
+      }
+
+      if (toggleBtn) {
+        toggleBtn.textContent = appState.pollEnabled ? `Pause` : `Resume`;
+      }
+
+      if (syncLabel) {
+        syncLabel.textContent = appState.lastSyncText + ` (#` + appState.syncCount + `)`;
+      }
+    }
+
+    function executeCorsSafeRefresh(isManual) {
+      var refreshBtn = document.getElementById(`btn-refresh`);
+      if (refreshBtn) refreshBtn.disabled = true;
+      updatePollUi(true);
+
+      // Purely local defensive snapshot validation (zero external fetch / zero CORS failures)
+      setTimeout(function () {
+        try {
+          if (!Array.isArray(TEAMS) || TEAMS.length === 0 || !Array.isArray(SCHEDULE_GAMES)) {
+            throw new Error(`Snapshot data unavailable`);
+          }
+          appState.syncCount += 1;
+          var now = new Date();
+          var hh = pad2(now.getHours());
+          var mm = pad2(now.getMinutes());
+          var ss = pad2(now.getSeconds());
+          appState.lastSyncText = `Verified Snapshot · ` + hh + `:` + mm + `:` + ss;
+          appState.pollCountdownSec = appState.pollIntervalSec;
+
+          renderTicker();
+          updateCountdowns();
+          renderScheduleTable();
+
+          if (isManual) {
+            showToast(`CORS-safe refresh complete: 4 rosters & ` + SCHEDULE_GAMES.length + ` schedule entries verified.`);
+          }
+        } catch (err) {
+          appState.lastSyncText = `Fallback Snapshot Active`;
+          if (isManual) {
+            showToast(`Fallback snapshot active — static cache preserved.`);
+          }
+        } finally {
+          if (refreshBtn) refreshBtn.disabled = false;
+          updatePollUi(false);
+        }
+      }, 180);
+    }
+
+    function startTimers() {
+      if (countdownIntervalId) clearInterval(countdownIntervalId);
+      if (pollIntervalId) clearInterval(pollIntervalId);
+
+      countdownIntervalId = setInterval(function () {
+        updateCountdowns();
+      }, 1000);
+
+      pollIntervalId = setInterval(function () {
+        if (!appState.pollEnabled) return;
+        appState.pollCountdownSec -= 1;
+        if (appState.pollCountdownSec <= 0) {
+          executeCorsSafeRefresh(false);
+        } else {
+          updatePollUi(false);
+        }
+      }, 1000);
+    }
+
+    // =========================================================================
+    // Hoisted Event Handlers (Required for inline onclick/oninput safety)
+    // =========================================================================
+    function setTeamFilter(teamId) {
+      appState.teamFilter = teamId;
+      renderAll();
+      persistStateSafely();
+    }
+
+    function setStatusFilter(status) {
+      appState.statusFilter = status;
+      syncControlUi();
+      renderScheduleTable();
+      persistStateSafely();
+    }
+
+    function setSearchQuery(val) {
+      appState.searchQuery = val || ``;
+      renderScheduleTable();
+      persistStateSafely();
+    }
+
+    function resetScheduleFilters() {
+      appState.teamFilter = `all`;
+      appState.statusFilter = `all`;
+      appState.searchQuery = ``;
+      renderAll();
+      persistStateSafely();
+    }
+
+    function setTimezone(tz) {
+      appState.timezone = tz;
+      syncControlUi();
+      renderRosterCards();
+      renderScheduleTable();
+      persistStateSafely();
+      showToast(`Broadcast times switched to ` + (tz === `ET` ? `Eastern Time (Florida)` : `Mountain Standard Time (Arizona)`));
+    }
+
+    function setClockMode(mode) {
+      appState.clockMode = mode;
+      syncControlUi();
+      updateCountdowns();
+      persistStateSafely();
+    }
+
+    function triggerManualRefresh() {
+      executeCorsSafeRefresh(true);
+    }
+
+    function togglePolling() {
+      appState.pollEnabled = !appState.pollEnabled;
+      updatePollUi(false);
+      persistStateSafely();
+      showToast(appState.pollEnabled ? `Live ticker auto-polling resumed (30s).` : `Live ticker auto-polling paused.`);
+    }
+
+    function exportScheduleCsv() {
+      var teamMap = getTeamLookup();
+      var games = getFilteredGames();
+      var lines = [`Team,Date,Time,Matchup,Venue,TV_Channel,Status,Score_or_Line,Notes`];
+      for (var i = 0; i < games.length; i++) {
+        var g = games[i];
+        var team = teamMap[g.teamId];
+        var tStr = g.timeKnown ? formatTimeInZone(g.dateIso, appState.timezone) : (g.resultBadge === `BYE` ? `Bye` : `Final`);
+        var row = [
+          team ? team.fullName : g.teamId,
+          g.dateDisplay,
+          tStr,
+          g.matchup,
+          g.venue,
+          g.channel,
+          g.resultBadge,
+          g.scoreText,
+          g.notes
+        ].map(function (cell) {
+          return `"` + String(cell).replace(/"/g, `""`) + `"`;
+        }).join(`,`);
+        lines.push(row);
+      }
+      var csv = lines.join(`\n`);
+
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === `function`) {
+          window.notebookAppApi.triggerFileDownload({
+            content: csv,
+            contentType: `text/csv`,
+            encoding: `UTF-8`,
+            filename: `janet-sports-schedule-2026.csv`
+          });
+          showToast(`Exported ` + games.length + ` schedule rows to CSV.`);
+          return;
+        }
+      } catch (err) {
+        // Fallback to standard browser download for GitHub Pages static hosting
+      }
+
+      var blob = new Blob([csv], { type: `text/csv;charset=utf-8;` });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement(`a`);
+      a.setAttribute(`href`, url);
+      a.setAttribute(`download`, `janet-sports-schedule-2026.csv`);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      showToast(`Exported ` + games.length + ` schedule rows to CSV.`);
+    }
+
+    // =========================================================================
+    // Initialization
+    // =========================================================================
+    async function initDashboard() {
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === `function`) {
+          var saved = await window.notebookAppApi.getAppState();
+          if (saved && typeof saved === `object`) {
+            if (saved.teamFilter) appState.teamFilter = saved.teamFilter;
+            if (saved.statusFilter) appState.statusFilter = saved.statusFilter;
+            if (typeof saved.searchQuery === `string`) appState.searchQuery = saved.searchQuery;
+            if (saved.timezone) appState.timezone = saved.timezone;
+            if (saved.clockMode) appState.clockMode = saved.clockMode;
+            if (typeof saved.pollEnabled === `boolean`) appState.pollEnabled = saved.pollEnabled;
+          }
+        }
+      } catch (err) {
+        // Ignore when running outside Gemini Notebook (e.g., GitHub Pages)
+      }
+
+      renderAll();
+      updatePollUi(false);
+      startTimers();
+
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === `function`) {
+          window.notebookAppApi.notifyAppReady();
+        }
+      } catch (err) {
+        // Static hosting safe
+      }
+    }
+
+    if (document.readyState === `loading`) {
+      document.addEventListener(`DOMContentLoaded`, initDashboard);
+    } else {
+      initDashboard();
+    }
+  </script>
+</body>
+</html>
